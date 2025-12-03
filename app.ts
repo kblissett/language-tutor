@@ -10,6 +10,16 @@ interface UserMessage extends Message {
     corrections?: string;
 }
 
+interface CorrectionResponse {
+    hasCorrections: boolean;
+    corrections: Array<{
+        type: 'error' | 'style';
+        original: string;
+        suggestion: string;
+        explanation: string;
+    }>;
+}
+
 class ChatApp {
     private openai: OpenAI | null = null;
     private messages: Message[] = [];
@@ -206,7 +216,7 @@ Remember: You're here to help them practice, so always respond in Spanish and ke
         }
     }
 
-    private async getCorrections(userMessage: string): Promise<string | null> {
+    private async getCorrections(userMessage: string): Promise<CorrectionResponse | null> {
         if (!this.openai) return null;
 
         try {
@@ -215,16 +225,17 @@ Remember: You're here to help them practice, so always respond in Spanish and ke
                 messages: [
                     {
                         role: 'system',
-                        content: `You are a Spanish language coach. Analyze the user's Spanish message and provide concise corrections in English.
+                        content: `You are a Spanish language coach. Analyze the user's Spanish message for:
+1. ERRORS: Grammar, spelling, word choice mistakes
+2. STYLE: Unnatural phrasing that could be more natural/idiomatic
 
-Format each correction as:
-❌ [what they wrote]
-✅ [correct version]
-→ [brief explanation]
+For each issue, provide:
+- Type (error or style)
+- The original text
+- The suggested improvement
+- A brief explanation
 
-If the message is perfect, respond with: "Perfect!"
-
-Be thorough - catch ALL errors. Be concise - no extra commentary.`
+Be thorough but concise. Catch both errors AND unnatural phrasing.`
                     },
                     {
                         role: 'user',
@@ -232,16 +243,77 @@ Be thorough - catch ALL errors. Be concise - no extra commentary.`
                     }
                 ],
                 temperature: 0.3,
+                response_format: {
+                    type: 'json_schema',
+                    json_schema: {
+                        name: 'correction_response',
+                        strict: true,
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                hasCorrections: {
+                                    type: 'boolean',
+                                    description: 'Whether the message has any errors that need correction'
+                                },
+                                corrections: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'object',
+                                        properties: {
+                                            type: {
+                                                type: 'string',
+                                                enum: ['error', 'style'],
+                                                description: 'Whether this is an error or a style suggestion'
+                                            },
+                                            original: {
+                                                type: 'string',
+                                                description: 'The original text from the user message'
+                                            },
+                                            suggestion: {
+                                                type: 'string',
+                                                description: 'The suggested improvement'
+                                            },
+                                            explanation: {
+                                                type: 'string',
+                                                description: 'Brief explanation of the issue'
+                                            }
+                                        },
+                                        required: ['type', 'original', 'suggestion', 'explanation'],
+                                        additionalProperties: false
+                                    }
+                                }
+                            },
+                            required: ['hasCorrections', 'corrections'],
+                            additionalProperties: false
+                        }
+                    }
+                }
             });
 
-            return response.choices[0]?.message?.content || null;
+            const content = response.choices[0]?.message?.content;
+            if (!content) return null;
+
+            return JSON.parse(content) as CorrectionResponse;
         } catch (error) {
             console.error('Error getting corrections:', error);
             return null;
         }
     }
 
-    private addCorrectionsToMessage(messageElement: HTMLElement, corrections: string): void {
+    private addCorrectionsToMessage(messageElement: HTMLElement, correctionData: CorrectionResponse): void {
+        // Only add corrections if there are actual errors
+        if (!correctionData.hasCorrections || correctionData.corrections.length === 0) {
+            return;
+        }
+
+        // Format corrections as text
+        const correctionsText = correctionData.corrections
+            .map(c => {
+                const prefix = c.type === 'error' ? 'Error' : 'Style';
+                return `${prefix}: ${c.suggestion}\n→ ${c.explanation}`;
+            })
+            .join('\n\n');
+
         // Create corrections container
         const correctionsContainer = document.createElement('div');
         correctionsContainer.className = 'corrections';
@@ -253,7 +325,7 @@ Be thorough - catch ALL errors. Be concise - no extra commentary.`
 
         const correctionsContent = document.createElement('div');
         correctionsContent.className = 'corrections-content';
-        correctionsContent.textContent = corrections;
+        correctionsContent.textContent = correctionsText;
 
         correctionsContainer.appendChild(correctionsHeader);
         correctionsContainer.appendChild(correctionsContent);
