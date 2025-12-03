@@ -1,8 +1,13 @@
 import OpenAI from 'openai';
 
 interface Message {
-    role: 'user' | 'assistant';
+    role: 'user' | 'assistant' | 'system';
     content: string;
+}
+
+interface UserMessage extends Message {
+    role: 'user';
+    corrections?: string;
 }
 
 class ChatApp {
@@ -35,6 +40,21 @@ class ChatApp {
         this.loadApiKey();
         this.setupEventListeners();
         this.autoResizeTextarea();
+
+        // Add system message for Spanish conversation partner
+        this.messages.push({
+            role: 'system',
+            content: `You are a friendly and patient Spanish conversation partner helping language learners practice their Spanish. Your role is to:
+
+- Have natural, engaging conversations entirely in Spanish
+- Be warm, approachable, and encouraging
+- Keep the conversation flowing by asking follow-up questions
+- Adapt to the learner's level while gently introducing new vocabulary
+- Discuss a variety of interesting topics
+- Be enthusiastic and make learning feel like chatting with a friend
+
+Remember: You're here to help them practice, so always respond in Spanish and keep the conversation going!`
+        });
 
         // Show settings if no API key
         if (!this.openai) {
@@ -124,8 +144,6 @@ class ChatApp {
         const content = this.userInput.value.trim();
         if (!content || this.isStreaming) return;
 
-        // Add user message
-        this.addMessage('user', content);
         this.userInput.value = '';
         this.autoResizeTextarea();
 
@@ -135,13 +153,20 @@ class ChatApp {
         this.userInput.disabled = true;
 
         try {
+            // Get corrections for user message (in parallel with adding message)
+            const correctionsPromise = this.getCorrections(content);
+
+            // Add user message (will be updated with corrections later)
+            const userMessageElement = this.createMessageElement('user', content);
+            this.messages.push({ role: 'user', content });
+
             // Create assistant message element
             const assistantMessageDiv = this.createMessageElement('assistant', '');
             const contentDiv = assistantMessageDiv.querySelector('.message-content') as HTMLElement;
 
             // Stream the response
             const stream = await this.openai.chat.completions.create({
-                model: 'gpt-5-mini',
+                model: 'gpt-4o-mini',
                 messages: this.messages,
                 stream: true,
             });
@@ -158,10 +183,16 @@ class ChatApp {
             // Add complete message to history
             this.messages.push({ role: 'assistant', content: fullContent });
 
+            // Add corrections to user message once ready
+            const corrections = await correctionsPromise;
+            if (corrections) {
+                this.addCorrectionsToMessage(userMessageElement, corrections);
+            }
+
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-            this.addMessage('assistant', `Error: ${errorMessage}`);
+            this.createMessageElement('assistant', `Error: ${errorMessage}`);
 
             // If it's an auth error, show settings
             if (errorMessage.includes('401') || errorMessage.includes('API key')) {
@@ -175,9 +206,71 @@ class ChatApp {
         }
     }
 
-    private addMessage(role: 'user' | 'assistant', content: string): void {
-        this.messages.push({ role, content });
-        this.createMessageElement(role, content);
+    private async getCorrections(userMessage: string): Promise<string | null> {
+        if (!this.openai) return null;
+
+        try {
+            const response = await this.openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `You are a Spanish language coach. Analyze the user's Spanish message and provide concise corrections in English.
+
+Format each correction as:
+❌ [what they wrote]
+✅ [correct version]
+→ [brief explanation]
+
+If the message is perfect, respond with: "Perfect!"
+
+Be thorough - catch ALL errors. Be concise - no extra commentary.`
+                    },
+                    {
+                        role: 'user',
+                        content: userMessage
+                    }
+                ],
+                temperature: 0.3,
+            });
+
+            return response.choices[0]?.message?.content || null;
+        } catch (error) {
+            console.error('Error getting corrections:', error);
+            return null;
+        }
+    }
+
+    private addCorrectionsToMessage(messageElement: HTMLElement, corrections: string): void {
+        // Create corrections container
+        const correctionsContainer = document.createElement('div');
+        correctionsContainer.className = 'corrections';
+        correctionsContainer.hidden = true;
+
+        const correctionsHeader = document.createElement('div');
+        correctionsHeader.className = 'corrections-header';
+        correctionsHeader.textContent = '💡 Coach\'s Notes';
+
+        const correctionsContent = document.createElement('div');
+        correctionsContent.className = 'corrections-content';
+        correctionsContent.textContent = corrections;
+
+        correctionsContainer.appendChild(correctionsHeader);
+        correctionsContainer.appendChild(correctionsContent);
+
+        // Add badge to toggle corrections
+        const badge = document.createElement('button');
+        badge.className = 'corrections-badge';
+        badge.textContent = '💡';
+        badge.setAttribute('aria-label', 'View corrections');
+        badge.onclick = () => {
+            const isHidden = correctionsContainer.hidden;
+            correctionsContainer.hidden = !isHidden;
+            badge.classList.toggle('active', !isHidden);
+        };
+
+        messageElement.appendChild(badge);
+        messageElement.appendChild(correctionsContainer);
     }
 
     private createMessageElement(role: 'user' | 'assistant', content: string): HTMLElement {
