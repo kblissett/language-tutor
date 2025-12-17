@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Tutor (Gemini) - Practice Your Spanish</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --bg-user: #007aff;
+      --bg-assistant: #e9ecef;
+      --text-primary: #000000;
+      --text-secondary: #666666;
+      --text-user: #ffffff;
+      --border: #d1d1d6;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --accent: #007aff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1c1c1e;
+        --bg-secondary: #2c2c2e;
+        --bg-user: #0a84ff;
+        --bg-assistant: #2c2c2e;
+        --text-primary: #ffffff;
+        --text-secondary: #aeaeb2;
+        --text-user: #ffffff;
+        --border: #38383a;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --accent: #0a84ff;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-primary);
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-secondary);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Messages */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      animation: slideIn 0.3s ease-out;
+      position: relative;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-content {
+      padding: 0.875rem 1.125rem;
+      border-radius: 1.125rem;
+      max-width: 70%;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .user-message {
+      align-items: flex-end;
+    }
+
+    .user-message .message-content {
+      background: var(--bg-user);
+      color: var(--text-user);
+      border-bottom-right-radius: 0.25rem;
+    }
+
+    .assistant-message .message-content {
+      background: var(--bg-assistant);
+      color: var(--text-primary);
+      border-bottom-left-radius: 0.25rem;
+    }
+
+    .thinking {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .error-message .message-content {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .error-message .message-content {
+        background: #450a0a;
+        color: #fca5a5;
+        border: 1px solid #7f1d1d;
+      }
+    }
+
+    /* Corrections */
+    .corrections-badge {
+      background: #fbbf24;
+      color: #78350f;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.5rem;
+      align-self: flex-end;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+    }
+
+    .corrections-badge:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+    }
+
+    .corrections-badge.active {
+      background: #f59e0b;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+    }
+
+    .corrections {
+      margin-top: 0.5rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      max-width: 70%;
+      align-self: flex-end;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .corrections-header {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #f59e0b;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .corrections-content {
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    /* Input Area */
+    .input-area {
+      display: flex;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg-primary);
+      flex-shrink: 0;
+      align-items: flex-end;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 1rem;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 44px;
+      max-height: 200px;
+    }
+
+    #user-input:focus {
+      border-color: var(--accent);
+    }
+
+    #user-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    #user-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .send-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+
+    .send-btn:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal[hidden] {
+      display: none;
+    }
+
+    .modal-content {
+      background: var(--bg-primary);
+      border-radius: 1rem;
+      box-shadow: 0 20px 60px var(--shadow);
+      width: 100%;
+      max-width: 500px;
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .modal-body label {
+      font-weight: 500;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .modal-body input {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .modal-body input:focus {
+      border-color: var(--accent);
+    }
+
+    .help-text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .help-text a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .help-text a:hover {
+      text-decoration: underline;
+    }
+
+    .primary-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .primary-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .primary-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+      }
+
+      header h1 {
+        font-size: 1.25rem;
+      }
+
+      .messages {
+        padding: 1rem;
+      }
+
+      .message-content {
+        max-width: 85%;
+        font-size: 0.9375rem;
+      }
+
+      .input-area {
+        padding: 0.75rem 1rem;
+        gap: 0.5rem;
+      }
+
+      .modal-content {
+        margin: 1rem;
+      }
+    }
+
+    /* Scrollbar styling for webkit browsers */
+    .messages::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .messages::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Spanish Tutor (Gemini)</h1>
+      <button id="settings-btn" class="icon-btn" aria-label="Settings">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+        </svg>
+      </button>
+    </header>
+
+    <div id="messages" class="messages"></div>
+
+    <div class="input-area">
+      <textarea
+        id="user-input"
+        placeholder="Escribe en español..."
+        rows="1"
+        aria-label="Message input"
+      ></textarea>
+      <button id="send-btn" class="send-btn" aria-label="Send message">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="settings-modal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button id="close-modal" class="icon-btn" aria-label="Close">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="api-key">Gemini API Key</label>
+        <input
+          type="password"
+          id="api-key"
+          placeholder="AIza..."
+          autocomplete="off"
+        >
+        <p class="help-text">
+          Your API key is stored locally in your browser and never sent anywhere except Google.
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Get your API key</a>
+        </p>
+        <button id="save-settings" class="primary-btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { GoogleGenAI } from 'https://esm.run/@google/genai@1.33.0';
+
+    class ChatApp {
+        constructor() {
+            this.apiKey = null;
+            this.messages = [];
+            this.isStreaming = false;
+            
+            this.messagesContainer = document.getElementById('messages');
+            this.userInput = document.getElementById('user-input');
+            this.sendBtn = document.getElementById('send-btn');
+            this.settingsBtn = document.getElementById('settings-btn');
+            this.settingsModal = document.getElementById('settings-modal');
+            this.closeModalBtn = document.getElementById('close-modal');
+            this.apiKeyInput = document.getElementById('api-key');
+            this.saveSettingsBtn = document.getElementById('save-settings');
+
+            this.systemPrompt = `You are a friendly and patient Spanish conversation partner helping language learners practice their Spanish. Your role is to:
+- Have natural, engaging conversations entirely in Spanish
+- Be warm, approachable, and encouraging
+- Keep the conversation flowing by asking follow-up questions
+- Adapt to the learner's level while gently introducing new vocabulary
+- Discuss a variety of interesting topics
+- Be enthusiastic and make learning feel like chatting with a friend
+
+Remember: You're here to help them practice, so always respond in Spanish and keep the conversation going!`;
+
+            this.init();
+        }
+
+        init() {
+            this.loadApiKey();
+            this.setupEventListeners();
+            this.autoResizeTextarea();
+
+            if (!this.apiKey) {
+                this.showSettings();
+            }
+        }
+
+        loadApiKey() {
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if (apiKey) {
+                this.apiKey = apiKey;
+                this.apiKeyInput.value = apiKey;
+            }
+        }
+
+        saveApiKey() {
+            const apiKey = this.apiKeyInput.value.trim();
+            if (!apiKey) {
+                alert('Please enter an API key');
+                return;
+            }
+
+            localStorage.setItem('gemini_api_key', apiKey);
+            this.apiKey = apiKey;
+            this.hideSettings();
+        }
+
+        setupEventListeners() {
+            this.sendBtn.addEventListener('click', () => this.sendMessage());
+            this.userInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+
+            this.userInput.addEventListener('input', () => this.autoResizeTextarea());
+
+            this.settingsBtn.addEventListener('click', () => this.showSettings());
+            this.closeModalBtn.addEventListener('click', () => this.hideSettings());
+            this.saveSettingsBtn.addEventListener('click', () => this.saveApiKey());
+
+            this.settingsModal.addEventListener('click', (e) => {
+                if (e.target === this.settingsModal) {
+                    this.hideSettings();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !this.settingsModal.hidden) {
+                    this.hideSettings();
+                }
+            });
+        }
+
+        autoResizeTextarea() {
+            this.userInput.style.height = 'auto';
+            const maxHeight = 200;
+            this.userInput.style.height = Math.min(this.userInput.scrollHeight, maxHeight) + 'px';
+        }
+
+        showSettings() {
+            this.settingsModal.hidden = false;
+        }
+
+        hideSettings() {
+            this.settingsModal.hidden = true;
+        }
+
+        async sendMessage() {
+            if (!this.apiKey) {
+                alert('Please set your Gemini API key in settings');
+                this.showSettings();
+                return;
+            }
+
+            const content = this.userInput.value.trim();
+            if (!content || this.isStreaming) return;
+
+            this.userInput.value = '';
+            this.autoResizeTextarea();
+
+            this.isStreaming = true;
+            this.sendBtn.disabled = true;
+            this.userInput.disabled = true;
+
+            let assistantMessageDiv = null;
+
+                        try {
+
+                            const userMessageElement = this.createMessageElement('user', content);
+
+                            
+
+                            // Add to history for Gemini format
+
+                            this.messages.push({
+
+                                role: 'user',
+
+                                parts: [{ text: content }]
+
+                            });
+
+            
+
+                            assistantMessageDiv = this.createMessageElement('assistant', '...');
+
+                            const contentDiv = assistantMessageDiv.querySelector('.message-content');
+
+                            contentDiv.classList.add('thinking');
+
+            
+
+                            const correctionsPromise = this.getCorrections(content).catch(err => {
+
+                                console.error('Corrections error:', err);
+
+                                return null;
+
+                            });
+
+            
+
+                            const genAI = new GoogleGenAI({ apiKey: this.apiKey });
+
+                            
+
+                            // Construct full history for the API call
+
+                            // The SDK expects the system instruction in the config, not in the contents
+
+                            const contents = this.messages.map(m => ({
+
+                                role: m.role === 'assistant' ? 'model' : 'user', // Ensure 'assistant' maps to 'model'
+
+                                parts: m.parts
+
+                            }));
+
+            
+
+                            const result = await genAI.models.generateContentStream({
+
+                                model: 'gemini-3-flash',
+
+                                contents: contents,
+
+                                config: {
+
+                                    systemInstruction: {
+
+                                        parts: [{ text: this.systemPrompt }]
+
+                                    }
+
+                                }
+
+                            });
+
+                            
+
+                            contentDiv.textContent = '';
+
+                            contentDiv.classList.remove('thinking');
+
+                            
+
+                            let fullContent = '';
+
+                            for await (const chunk of result.stream) {
+
+                                const chunkText = chunk.text();
+
+                                fullContent += chunkText;
+
+                                contentDiv.textContent = fullContent;
+
+                                this.scrollToBottom();
+
+                            }
+
+                            
+
+                            if (!fullContent) {
+
+                                contentDiv.textContent = '(Sin respuesta)';
+
+                            } else {
+
+                                this.messages.push({
+
+                                    role: 'model', // Store as 'model' for consistency with SDK
+
+                                    parts: [{ text: fullContent }]
+
+                                });
+
+                            }
+
+            
+
+                            const corrections = await correctionsPromise;
+
+                            if (corrections) {
+
+                                this.addCorrectionsToMessage(userMessageElement, corrections);
+
+                            }
+
+            
+
+                        } catch (error) {
+
+                            console.error('Chat error:', error);
+
+                            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+
+                            
+
+                            if (assistantMessageDiv) {
+
+                                const contentDiv = assistantMessageDiv.querySelector('.message-content');
+
+                                if (contentDiv) {
+
+                                    contentDiv.textContent = `Error: ${errorMessage}`;
+
+                                    contentDiv.classList.remove('thinking');
+
+                                }
+
+                                assistantMessageDiv.classList.add('error-message');
+
+                            } else {
+
+                                this.createMessageElement('assistant', `Error: ${errorMessage}`);
+
+                            }
+
+                        } finally {
+
+                            this.isStreaming = false;
+
+                            this.sendBtn.disabled = false;
+
+                            this.userInput.disabled = false;
+
+                            this.userInput.focus();
+
+                        }
+
+                    }
+
+            
+
+                    async getCorrections(userMessage) {
+
+                        const genAI = new GoogleGenAI({ apiKey: this.apiKey });
+
+                        const prompt = `You are a Spanish language coach. Analyze the following Spanish message for ERRORS and STYLE: "${userMessage}"`;
+
+                        
+
+                        const result = await genAI.models.generateContent({
+
+                            model: 'gemini-3-flash',
+
+                            contents: [{
+
+                                role: 'user',
+
+                                parts: [{ text: prompt }]
+
+                            }],
+
+                            config: {
+
+                                responseMimeType: "application/json",
+
+                                responseSchema: {
+
+                                    type: "object",
+
+                                    properties: {
+
+                                        hasCorrections: { type: "boolean" },
+
+                                        corrections: {
+
+                                            type: "array",
+
+                                            items: {
+
+                                                type: "object",
+
+                                                properties: {
+
+                                                    type: { type: "string", enum: ["error", "style"] },
+
+                                                    original: { type: "string" },
+
+                                                    suggestion: { type: "string" },
+
+                                                    explanation: { type: "string" }
+
+                                                },
+
+                                                required: ["type", "original", "suggestion", "explanation"]
+
+                                            }
+
+                                        }
+
+                                    },
+
+                                    required: ["hasCorrections", "corrections"]
+
+                                }
+
+                            }
+
+                        });
+
+            
+
+                        return JSON.parse(result.response.text());
+
+                    }
+
+        addCorrectionsToMessage(messageElement, correctionData) {
+            if (!correctionData.hasCorrections || !correctionData.corrections || correctionData.corrections.length === 0) {
+                return;
+            }
+
+            const correctionsText = correctionData.corrections
+                .map(c => {
+                    const prefix = c.type === 'error' ? 'Error' : 'Style';
+                    return `${prefix}: ${c.suggestion}\n→ ${c.explanation}`;
+                })
+                .join('\n\n');
+
+            const correctionsContainer = document.createElement('div');
+            correctionsContainer.className = 'corrections';
+            correctionsContainer.hidden = true;
+
+            const correctionsHeader = document.createElement('div');
+            correctionsHeader.className = 'corrections-header';
+            correctionsHeader.textContent = "💡 Coach's Notes";
+
+            const correctionsContent = document.createElement('div');
+            correctionsContent.className = 'corrections-content';
+            correctionsContent.textContent = correctionsText;
+
+            correctionsContainer.appendChild(correctionsHeader);
+            correctionsContainer.appendChild(correctionsContent);
+
+            const badge = document.createElement('button');
+            badge.className = 'corrections-badge';
+            badge.textContent = '💡';
+            badge.setAttribute('aria-label', 'View corrections');
+            badge.onclick = () => {
+                const isHidden = correctionsContainer.hidden;
+                correctionsContainer.hidden = !isHidden;
+                badge.classList.toggle('active', !isHidden);
+            };
+
+            messageElement.appendChild(badge);
+            messageElement.appendChild(correctionsContainer);
+        }
+
+        createMessageElement(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+
+            messageDiv.appendChild(contentDiv);
+            this.messagesContainer.appendChild(messageDiv);
+            this.scrollToBottom();
+
+            return messageDiv;
+        }
+
+        scrollToBottom() {
+            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+        }
+    }
+
+    new ChatApp();
+  </script>
+</body>
+</html>

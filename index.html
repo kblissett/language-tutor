@@ -3,63 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spanish Tutor - Practice Your Spanish</title>
-  <link rel="stylesheet" href="./styles.css">
+  <title>Spanish Tutor - Choose Your AI</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --text-primary: #000000;
+      --accent: #007aff;
+      --border: #d1d1d6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1c1c1e;
+        --bg-secondary: #2c2c2e;
+        --text-primary: #ffffff;
+        --accent: #0a84ff;
+        --border: #38383a;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      border: 1px solid var(--border);
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 2rem;
+    }
+
+    p {
+      color: var(--text-primary);
+      opacity: 0.8;
+      margin-bottom: 2rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .btn {
+      display: block;
+      padding: 1rem;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-primary);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Spanish Tutor</h1>
-      <button id="settings-btn" class="icon-btn" aria-label="Settings">
-        <img src="./cog.svg" width="24" height="24" alt="Settings">
-      </button>
-    </header>
-
-    <div id="messages" class="messages"></div>
-
-    <div class="input-area">
-      <textarea
-        id="user-input"
-        placeholder="Escribe en español..."
-        rows="1"
-        aria-label="Message input"
-      ></textarea>
-      <button id="send-btn" class="send-btn" aria-label="Send message">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
-        </svg>
-      </button>
+  <div class="card">
+    <h1>¡Hola! 🇪🇸</h1>
+    <p>Practice your Spanish with an AI tutor. Choose your preferred model to begin.</p>
+    <div class="options">
+      <a href="openai.html" class="btn">OpenAI Tutor (GPT-5.2)</a>
+      <a href="gemini.html" class="btn btn-secondary">Gemini Tutor (3 Flash)</a>
     </div>
   </div>
-
-  <!-- Settings Modal -->
-  <div id="settings-modal" class="modal" hidden>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Settings</h2>
-        <button id="close-modal" class="icon-btn" aria-label="Close">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6L6 18M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <label for="api-key">OpenAI API Key</label>
-        <input
-          type="password"
-          id="api-key"
-          placeholder="sk-..."
-          autocomplete="off"
-        >
-        <p class="help-text">
-          Your API key is stored locally in your browser and never sent anywhere except OpenAI.
-          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">Get your API key</a>
-        </p>
-        <button id="save-settings" class="primary-btn">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <script type="module" src="./app.ts"></script>
 </body>
 </html>
