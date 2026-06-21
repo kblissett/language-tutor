@@ -6,6 +6,7 @@ A self-contained, single-file Spanish conversation partner and language coach.
 
 - **Natural Conversation**: Practice Spanish with an AI that adapts to your level.
 - **Real-time Corrections**: Get instant feedback on grammar, spelling, and phrasing.
+- **Web Search**: Ask the chat tutor to look up current information when needed.
 - **Privacy First**: Your OpenAI API key is stored locally in your browser and never sent anywhere else.
 - **No Setup Required**: No build steps, no dependencies, just a single HTML file.
 
@@ -18,4 +19,4 @@ A self-contained, single-file Spanish conversation partner and language coach.
 
 ## Technical Details
 
-This tool is built as a "Single-File HTML Tool". It combines HTML, CSS, and Vanilla JavaScript into one file for maximum portability and simplicity. It uses direct browser `fetch` calls to the OpenAI API with SSE for streaming responses.
+This tool is built as a "Single-File HTML Tool". It combines HTML, CSS, and Vanilla JavaScript into one file for maximum portability and simplicity. It uses direct browser `fetch` calls to the OpenAI Responses API with SSE for streaming chat responses, web search for current lookups, and structured JSON output for corrections.
