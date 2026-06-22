@@ -83,6 +83,7 @@
     }
 
     .scenario-content {
+      flex: 1;
       min-width: 0;
     }
 
@@ -95,7 +96,27 @@
       text-transform: uppercase;
     }
 
-    .scenario-text {
+    .scenario-details {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .scenario-field {
+      min-width: 0;
+    }
+
+    .scenario-field-label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .scenario-field-value {
       display: block;
       color: var(--text-primary);
       font-size: 0.9375rem;
@@ -479,6 +500,10 @@
         padding: 0.75rem 1rem;
       }
 
+      .scenario-details {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
       .secondary-btn {
         width: 100%;
       }
@@ -534,8 +559,8 @@
 
     <div id="scenario-bar" class="scenario-bar">
       <div class="scenario-content">
-        <span class="scenario-label">Your role</span>
-        <span id="scenario-text" class="scenario-text"></span>
+        <span class="scenario-label">Scenario</span>
+        <div id="scenario-details" class="scenario-details"></div>
       </div>
       <button id="disable-scenario-btn" class="secondary-btn" type="button">Disable scenario</button>
     </div>
@@ -593,113 +618,613 @@
             this.hasSentFirstMessage = false;
             this.scenarioEnabled = true;
             this.rolePlayScenarios = [
-                { learnerRole: 'You order breakfast at a busy cafe and ask about substitutions.', tutorRole: 'You are the cafe barista taking the order.' },
-                { learnerRole: 'You ask about grocery prices, discounts, and payment options.', tutorRole: 'You are the grocery cashier helping at checkout.' },
-                { learnerRole: 'You explain mild symptoms and ask for over-the-counter advice.', tutorRole: 'You are the pharmacist asking careful follow-up questions.' },
-                { learnerRole: 'You describe symptoms during a routine doctor appointment.', tutorRole: 'You are the doctor leading the appointment.' },
-                { learnerRole: 'You schedule, change, or confirm a dentist appointment.', tutorRole: 'You are the dentist receptionist managing the calendar.' },
-                { learnerRole: 'You ask about restaurant ingredients, allergies, and recommendations.', tutorRole: 'You are the restaurant server explaining the menu.' },
-                { learnerRole: 'You check into a hotel and ask about local transportation.', tutorRole: 'You are the hotel receptionist welcoming the guest.' },
-                { learnerRole: 'You give directions to a destination and ask about the fare.', tutorRole: 'You are the taxi driver confirming the route.' },
-                { learnerRole: 'You ask about bus routes, delays, and tickets.', tutorRole: 'You are the bus station employee giving travel information.' },
-                { learnerRole: 'You boarded the wrong train and need help fixing the trip.', tutorRole: 'You are the train conductor helping the passenger.' },
-                { learnerRole: 'You ask about a delayed or missed flight.', tutorRole: 'You are the airport gate agent explaining the options.' },
-                { learnerRole: 'You compare rental car options and insurance.', tutorRole: 'You are the car rental agent reviewing the choices.' },
-                { learnerRole: 'You explain a problem with your bicycle.', tutorRole: 'You are the bike repair mechanic diagnosing the issue.' },
-                { learnerRole: 'You report a broken appliance in your apartment.', tutorRole: 'You are the landlord asking what needs repair.' },
-                { learnerRole: 'You tour an apartment and ask about fees.', tutorRole: 'You are the apartment leasing agent answering questions.' },
-                { learnerRole: 'You politely discuss a noise problem with a neighbor.', tutorRole: 'You are the neighbor responding to the concern.' },
-                { learnerRole: 'You negotiate chores and shared expenses with a roommate.', tutorRole: 'You are the roommate discussing a fair plan.' },
-                { learnerRole: 'You explain a repair project and ask what supplies to buy.', tutorRole: 'You are the hardware store employee recommending tools and materials.' },
-                { learnerRole: 'You compare phone plans and upgrade options.', tutorRole: 'You are the phone store employee explaining the plans.' },
-                { learnerRole: 'You call customer support about an incorrect bill.', tutorRole: 'You are the customer support representative investigating the bill.' },
-                { learnerRole: 'You return an online purchase that does not fit.', tutorRole: 'You are the online store representative processing the return.' },
-                { learnerRole: 'You open a bank account and ask about fees.', tutorRole: 'You are the bank teller explaining account options.' },
-                { learnerRole: 'You discuss saving for a short-term goal.', tutorRole: 'You are the financial advisor helping make a simple plan.' },
-                { learnerRole: 'You answer common job interview questions.', tutorRole: 'You are the job interviewer learning about the candidate.' },
-                { learnerRole: 'You negotiate schedule, salary, or start date for a new job.', tutorRole: 'You are the hiring manager discussing the offer.' },
-                { learnerRole: 'You ask a coworker for help on a deadline.', tutorRole: 'You are the coworker figuring out how to help.' },
-                { learnerRole: 'You explain a mistake at work and propose a fix.', tutorRole: 'You are the manager asking practical follow-up questions.' },
-                { learnerRole: 'You plan a study session before an exam.', tutorRole: 'You are the classmate coordinating the session.' },
-                { learnerRole: 'You ask for clarification after class.', tutorRole: 'You are the teacher explaining the confusing point.' },
-                { learnerRole: 'You ask for help finding a book or resource.', tutorRole: 'You are the library worker guiding the search.' },
-                { learnerRole: 'You ask about gym classes, memberships, and equipment.', tutorRole: 'You are the gym employee explaining options.' },
-                { learnerRole: 'You discuss fitness goals and limitations.', tutorRole: 'You are the personal trainer suggesting a realistic approach.' },
-                { learnerRole: 'You describe the haircut or style you want.', tutorRole: 'You are the hair stylist asking about preferences.' },
-                { learnerRole: 'You shop for an outfit for a specific event.', tutorRole: 'You are the clothing store associate offering options.' },
-                { learnerRole: 'You ask about shoe sizing, comfort, and returns.', tutorRole: 'You are the shoe store associate helping find the right fit.' },
-                { learnerRole: 'You ask for a book recommendation.', tutorRole: 'You are the bookstore employee recommending titles.' },
-                { learnerRole: 'You ask questions about a museum exhibit.', tutorRole: 'You are the museum guide explaining the exhibit.' },
-                { learnerRole: 'You ask about local history and practical travel tips.', tutorRole: 'You are the tour guide leading the conversation.' },
-                { learnerRole: 'You make small talk with someone new at a party.', tutorRole: 'You are the party host introducing yourself.' },
-                { learnerRole: 'You start a polite conversation at a wedding reception.', tutorRole: 'You are another wedding guest chatting at the reception.' },
-                { learnerRole: 'You invite a friend to dinner and work out the details.', tutorRole: 'You are the friend responding to the invitation.' },
-                { learnerRole: 'You adjust plans with a friend who is running late.', tutorRole: 'You are the late friend explaining the delay.' },
-                { learnerRole: 'You catch up with a family member on a video call.', tutorRole: 'You are the family member asking about recent news.' },
-                { learnerRole: 'You make brief friendly small talk with a neighbor in an elevator.', tutorRole: 'You are the neighbor sharing the elevator.' },
-                { learnerRole: 'You explain routines, rules, and emergency contacts to a babysitter.', tutorRole: 'You are the babysitter asking what you need to know.' },
-                { learnerRole: 'You explain how to care for your pet while you are away.', tutorRole: 'You are the pet sitter confirming the care routine.' },
-                { learnerRole: 'You describe a pet issue and schedule a veterinary visit.', tutorRole: 'You are the veterinary receptionist booking the appointment.' },
-                { learnerRole: 'You give instructions for a package drop-off.', tutorRole: 'You are the delivery driver confirming where to leave the package.' },
-                { learnerRole: 'You mail a package and ask about tracking.', tutorRole: 'You are the post office clerk explaining shipping choices.' },
-                { learnerRole: 'You ask about parking rates or a lost ticket.', tutorRole: 'You are the parking attendant explaining the policy.' },
-                { learnerRole: 'You report a lost wallet.', tutorRole: 'You are the police officer taking the report.' },
-                { learnerRole: 'You ask how to help at a community event.', tutorRole: 'You are the event volunteer explaining tasks.' },
-                { learnerRole: 'You sign up for a class at a community center.', tutorRole: 'You are the community center employee reviewing the schedule.' },
-                { learnerRole: 'You describe a computer problem.', tutorRole: 'You are the repair technician diagnosing the issue.' },
-                { learnerRole: 'You report slow internet service.', tutorRole: 'You are the internet provider agent troubleshooting the problem.' },
-                { learnerRole: 'You explain an issue with outlets or lights.', tutorRole: 'You are the electrician asking safety questions.' },
-                { learnerRole: 'You describe a leak and schedule a repair.', tutorRole: 'You are the plumber gathering details.' },
-                { learnerRole: 'You explain a car problem and ask about cost.', tutorRole: 'You are the mechanic explaining possible causes.' },
-                { learnerRole: 'You ask about driving lessons and road test practice.', tutorRole: 'You are the driving instructor explaining lesson options.' },
-                { learnerRole: 'You plan a short trip within a budget.', tutorRole: 'You are the travel agent suggesting options.' },
-                { learnerRole: 'You ask about shared rooms and hostel rules.', tutorRole: 'You are the hostel employee explaining the stay.' },
-                { learnerRole: 'You ask what to do on a rainy day while traveling.', tutorRole: 'You are the tourist information clerk suggesting activities.' },
-                { learnerRole: 'You ask about trail safety and weather.', tutorRole: 'You are the park ranger giving practical advice.' },
-                { learnerRole: 'You coordinate food, timing, and transportation for a picnic.', tutorRole: 'You are the picnic host planning with the group.' },
-                { learnerRole: 'You ask for a restaurant table for a group with different needs.', tutorRole: 'You are the restaurant host checking availability.' },
-                { learnerRole: 'You ask how to cook a simple family recipe.', tutorRole: 'You are the chef friend explaining the recipe.' },
-                { learnerRole: 'You plan easy meals for a busy week.', tutorRole: 'You are the nutritionist suggesting practical meals.' },
-                { learnerRole: 'You ask about produce and cooking ideas at a farmers market.', tutorRole: 'You are the farmers market vendor describing what is fresh.' },
-                { learnerRole: 'You start a friendly conversation while waiting in a coffee shop line.', tutorRole: 'You are a coffee shop regular chatting in line.' },
-                { learnerRole: 'You buy movie tickets and ask about showtimes.', tutorRole: 'You are the movie theater employee selling tickets.' },
-                { learnerRole: 'You ask about instruments or music lessons.', tutorRole: 'You are the music store employee explaining options.' },
-                { learnerRole: 'You recommend a favorite podcast and explain why you like it.', tutorRole: 'You are a podcast fan asking follow-up questions.' },
-                { learnerRole: 'You talk about a recent game or favorite sports team.', tutorRole: 'You are a sports fan discussing the game.' },
-                { learnerRole: 'You explain how you like to practice languages.', tutorRole: 'You are a language exchange partner planning practice.' },
-                { learnerRole: 'You ask for help setting a study goal.', tutorRole: 'You are the tutor helping define the goal.' },
-                { learnerRole: 'You talk through stress and relaxation strategies.', tutorRole: 'You are the counselor listening and asking gentle questions.' },
-                { learnerRole: 'You describe evening habits and ask for better sleep ideas.', tutorRole: 'You are the sleep coach suggesting routine changes.' },
-                { learnerRole: 'You ask for advice before making a big purchase.', tutorRole: 'You are the friend helping compare options.' },
-                { learnerRole: 'You compare neighborhoods and commute options.', tutorRole: 'You are the real estate agent answering practical questions.' },
-                { learnerRole: 'You shop for furniture for a small room.', tutorRole: 'You are the furniture store associate suggesting pieces.' },
-                { learnerRole: 'You describe what makes a home feel comfortable.', tutorRole: 'You are an interior designer friend asking about preferences.' },
-                { learnerRole: 'You ask for directions inside a large building.', tutorRole: 'You are the security guard giving directions.' },
-                { learnerRole: 'You introduce yourself professionally at a conference.', tutorRole: 'You are another conference attendee continuing the conversation.' },
-                { learnerRole: 'You plan project tasks around a busy calendar.', tutorRole: 'You are the project partner coordinating responsibilities.' },
-                { learnerRole: 'You make casual conversation at a school event.', tutorRole: 'You are another parent at the event.' },
-                { learnerRole: 'You ask about volunteer duties and schedules.', tutorRole: 'You are the volunteer coordinator explaining the role.' },
-                { learnerRole: 'You explain that you missed a doctor appointment.', tutorRole: 'You are the doctor office receptionist rescheduling the visit.' },
-                { learnerRole: 'You make a polite complaint about a restaurant order.', tutorRole: 'You are the restaurant manager responding professionally.' },
-                { learnerRole: 'You ask for an exception to a return policy.', tutorRole: 'You are the store manager explaining what is possible.' },
-                { learnerRole: 'You choose a restaurant with a friend who has different food preferences.', tutorRole: 'You are the friend discussing preferences and constraints.' },
-                { learnerRole: 'You change outdoor plans because of rain.', tutorRole: 'You are the weather-conscious friend helping make a new plan.' },
-                { learnerRole: 'You give directions in your neighborhood.', tutorRole: 'You are the person asking how to get somewhere nearby.' },
-                { learnerRole: 'You explain how to use local public transit.', tutorRole: 'You are the lost tourist trying to understand the route.' },
-                { learnerRole: 'You describe your workday during lunch with a colleague.', tutorRole: 'You are the colleague asking about the day.' },
-                { learnerRole: 'You share a childhood tradition or memory with an old friend.', tutorRole: 'You are the old friend asking about the memory.' },
-                { learnerRole: 'You describe a favorite photo and the story behind it.', tutorRole: 'You are the photographer friend asking about the photo.' },
-                { learnerRole: 'You explain what makes a city easy to live in.', tutorRole: 'You are the city planner asking for resident feedback.' },
-                { learnerRole: 'You discuss how you stay informed without feeling overwhelmed.', tutorRole: 'You are the journalist asking about media habits.' },
-                { learnerRole: 'You talk about sustainable daily habits.', tutorRole: 'You are the environmental volunteer discussing practical changes.' },
-                { learnerRole: 'You plan a quiet evening to recharge after a hard day.', tutorRole: 'You are the friend helping make the evening relaxing.' }
+                {
+                    tutorRole: 'Cafe barista managing a busy morning rush.',
+                    learnerRole: 'Customer ordering breakfast before work.',
+                    scene: 'A crowded neighborhood cafe with a short line behind you.',
+                    learnerGoal: 'Order a filling breakfast, ask for one substitution, and pay quickly.'
+                },
+                {
+                    tutorRole: 'Pharmacist asking careful follow-up questions.',
+                    learnerRole: 'Customer with mild cold symptoms.',
+                    scene: 'A pharmacy counter on a weekday evening.',
+                    learnerGoal: 'Explain your symptoms, choose an over-the-counter medicine, and confirm how to take it safely.'
+                },
+                {
+                    tutorRole: 'Doctor leading a routine appointment.',
+                    learnerRole: 'Patient describing a new but non-urgent health concern.',
+                    scene: 'A small clinic exam room during an afternoon appointment.',
+                    learnerGoal: 'Describe the problem clearly, answer follow-up questions, and understand the next step.'
+                },
+                {
+                    tutorRole: 'Restaurant server explaining the menu.',
+                    learnerRole: 'Diner with a food allergy.',
+                    scene: 'A busy casual restaurant before a show.',
+                    learnerGoal: 'Find a safe meal, ask about ingredients, and place your order before you need to leave.'
+                },
+                {
+                    tutorRole: 'Hotel receptionist welcoming guests.',
+                    learnerRole: 'Traveler arriving after a long trip.',
+                    scene: 'A hotel lobby late at night.',
+                    learnerGoal: 'Check in, ask about breakfast and transportation, and get the room key.'
+                },
+                {
+                    tutorRole: 'Train conductor helping passengers.',
+                    learnerRole: 'Passenger who boarded the wrong train.',
+                    scene: 'A moving train just after the doors have closed.',
+                    learnerGoal: 'Explain the mistake, find the best transfer, and avoid paying more than necessary.'
+                },
+                {
+                    tutorRole: 'Airport gate agent explaining travel options.',
+                    learnerRole: 'Traveler dealing with a delayed flight.',
+                    scene: 'A crowded airport gate during bad weather.',
+                    learnerGoal: 'Understand the delay, protect your connection, and choose the best available option.'
+                },
+                {
+                    tutorRole: 'Landlord asking practical repair questions.',
+                    learnerRole: 'Tenant reporting a broken appliance.',
+                    scene: 'A phone call from your apartment kitchen.',
+                    learnerGoal: 'Describe the problem, arrange a repair time, and ask what to do until it is fixed.'
+                },
+                {
+                    tutorRole: 'Apartment leasing agent answering questions.',
+                    learnerRole: 'Apartment hunter touring a new place.',
+                    scene: 'An apartment tour in a building you might rent.',
+                    learnerGoal: 'Ask about rent, fees, rules, and decide whether to submit an application.'
+                },
+                {
+                    tutorRole: 'Customer support representative investigating a bill.',
+                    learnerRole: 'Customer who noticed an incorrect charge.',
+                    scene: 'A customer support chat about your latest bill.',
+                    learnerGoal: 'Explain the charge, get the bill corrected, and confirm what happens next.'
+                },
+                {
+                    tutorRole: 'Online store representative processing returns.',
+                    learnerRole: 'Customer returning an item that does not fit.',
+                    scene: 'A support call with your order number nearby.',
+                    learnerGoal: 'Start the return, ask about shipping costs, and choose refund or exchange.'
+                },
+                {
+                    tutorRole: 'Bank teller explaining account options.',
+                    learnerRole: 'New customer opening a bank account.',
+                    scene: 'A bank branch on your lunch break.',
+                    learnerGoal: 'Choose an account, understand the fees, and learn what documents are required.'
+                },
+                {
+                    tutorRole: 'Job interviewer learning about a candidate.',
+                    learnerRole: 'Applicant interviewing for a part-time job.',
+                    scene: 'A video interview with a hiring team member.',
+                    learnerGoal: 'Introduce your experience, answer common questions, and ask about the schedule.'
+                },
+                {
+                    tutorRole: 'Hiring manager discussing an offer.',
+                    learnerRole: 'Candidate who received a job offer.',
+                    scene: 'A final phone call before accepting the offer.',
+                    learnerGoal: 'Negotiate schedule, salary, or start date while staying polite and professional.'
+                },
+                {
+                    tutorRole: 'Coworker figuring out how to help.',
+                    learnerRole: 'Employee facing a deadline.',
+                    scene: 'A quick conversation near a shared workspace.',
+                    learnerGoal: 'Ask for help, divide the work, and agree on a realistic timeline.'
+                },
+                {
+                    tutorRole: 'Teacher explaining a confusing point.',
+                    learnerRole: 'Student asking for clarification after class.',
+                    scene: 'A classroom a few minutes after the lesson ends.',
+                    learnerGoal: 'Explain what you did not understand and leave with one concrete study task.'
+                },
+                {
+                    tutorRole: 'Gym employee explaining memberships and classes.',
+                    learnerRole: 'New visitor comparing fitness options.',
+                    scene: 'A gym front desk during an open house.',
+                    learnerGoal: 'Find a membership or class that fits your schedule, budget, and fitness level.'
+                },
+                {
+                    tutorRole: 'Hair stylist asking about preferences.',
+                    learnerRole: 'Client getting a haircut before an event.',
+                    scene: 'A salon chair with photos open on your phone.',
+                    learnerGoal: 'Describe the style you want and agree on length, shape, and timing.'
+                },
+                {
+                    tutorRole: 'Clothing store associate offering options.',
+                    learnerRole: 'Shopper preparing for a specific event.',
+                    scene: 'A clothing store fitting room area.',
+                    learnerGoal: 'Find an outfit in the right size, style, and price range.'
+                },
+                {
+                    tutorRole: 'Museum guide explaining an exhibit.',
+                    learnerRole: 'Visitor curious about a famous object.',
+                    scene: 'A museum gallery during a guided tour.',
+                    learnerGoal: 'Ask thoughtful questions and understand why the exhibit matters.'
+                },
+                {
+                    tutorRole: 'Friend responding to an invitation.',
+                    learnerRole: 'Friend planning a casual dinner.',
+                    scene: 'A text conversation while both people are making weekend plans.',
+                    learnerGoal: 'Choose a time, place, and meal plan that works for both of you.'
+                },
+                {
+                    tutorRole: 'Babysitter asking what they need to know.',
+                    learnerRole: 'Parent preparing to leave for the evening.',
+                    scene: 'Your home just before the babysitter starts.',
+                    learnerGoal: 'Explain routines, rules, food, and emergency contacts clearly.'
+                },
+                {
+                    tutorRole: 'Post office clerk explaining shipping choices.',
+                    learnerRole: 'Customer mailing an important package.',
+                    scene: 'A post office counter with people waiting behind you.',
+                    learnerGoal: 'Choose a shipping speed, ask about tracking, and make sure the address is correct.'
+                },
+                {
+                    tutorRole: 'Police officer taking a report.',
+                    learnerRole: 'Person who lost a wallet.',
+                    scene: 'A small police station desk near closing time.',
+                    learnerGoal: 'Report the lost wallet, give key details, and learn how to follow up.'
+                },
+                {
+                    tutorRole: 'Repair technician diagnosing a laptop problem.',
+                    learnerRole: 'Customer with a computer that will not work properly.',
+                    scene: 'A repair shop counter with your laptop open.',
+                    learnerGoal: 'Describe the issue, ask about cost and timing, and decide whether to leave the laptop.'
+                },
+                {
+                    tutorRole: 'Internet provider agent troubleshooting service.',
+                    learnerRole: 'Customer with slow internet at home.',
+                    scene: 'A support call while you are next to the router.',
+                    learnerGoal: 'Explain the problem, try basic troubleshooting, and schedule help if needed.'
+                },
+                {
+                    tutorRole: 'Mechanic explaining possible car problems.',
+                    learnerRole: 'Driver whose car is making a strange noise.',
+                    scene: 'An auto repair shop early in the morning.',
+                    learnerGoal: 'Describe the problem, ask about safety and cost, and arrange the repair.'
+                },
+                {
+                    tutorRole: 'Travel agent suggesting options.',
+                    learnerRole: 'Traveler planning a short trip on a budget.',
+                    scene: 'A travel agency desk with several dates in mind.',
+                    learnerGoal: 'Find an affordable destination, compare transportation, and choose a plan.'
+                },
+                {
+                    tutorRole: 'Hostel employee explaining the stay.',
+                    learnerRole: 'Backpacker checking into a shared room.',
+                    scene: 'A hostel reception desk in a noisy common area.',
+                    learnerGoal: 'Check in, understand shared room rules, and ask where to store luggage.'
+                },
+                {
+                    tutorRole: 'Tourist information clerk suggesting activities.',
+                    learnerRole: 'Traveler whose outdoor plans were ruined by rain.',
+                    scene: 'A visitor center on a rainy afternoon.',
+                    learnerGoal: 'Find an indoor activity, plan transportation, and keep the day enjoyable.'
+                },
+                {
+                    tutorRole: 'Park ranger giving practical safety advice.',
+                    learnerRole: 'Hiker planning a trail walk.',
+                    scene: 'A park visitor center before starting a hike.',
+                    learnerGoal: 'Choose a safe trail, understand the weather risk, and prepare correctly.'
+                },
+                {
+                    tutorRole: 'Restaurant host checking availability.',
+                    learnerRole: 'Organizer booking a table for a group.',
+                    scene: 'A phone call to a popular restaurant.',
+                    learnerGoal: 'Reserve a table for a group with different needs and confirm the details.'
+                },
+                {
+                    tutorRole: 'Farmers market vendor describing what is fresh.',
+                    learnerRole: 'Shopper planning a simple dinner.',
+                    scene: 'A farmers market stall near the end of the morning.',
+                    learnerGoal: 'Choose fresh produce, ask how to cook it, and stay within budget.'
+                },
+                {
+                    tutorRole: 'Movie theater employee selling tickets.',
+                    learnerRole: 'Customer buying tickets for a group.',
+                    scene: 'A movie theater box office before a popular showing.',
+                    learnerGoal: 'Find a showtime, get seats together, and ask about snacks or discounts.'
+                },
+                {
+                    tutorRole: 'Language exchange partner planning practice.',
+                    learnerRole: 'Spanish learner setting up a practice routine.',
+                    scene: 'A cafe table during the first language exchange meeting.',
+                    learnerGoal: 'Agree on topics, timing, and rules for helping each other practice.'
+                },
+                {
+                    tutorRole: 'Friend helping compare purchase options.',
+                    learnerRole: 'Shopper deciding on a big purchase.',
+                    scene: 'A living room conversation with product pages open.',
+                    learnerGoal: 'Compare options, explain your priorities, and decide what to buy or wait on.'
+                },
+                {
+                    tutorRole: 'Real estate agent answering practical questions.',
+                    learnerRole: 'Person comparing neighborhoods.',
+                    scene: 'A car ride between two apartment showings.',
+                    learnerGoal: 'Compare commute, safety, price, and daily convenience before choosing a favorite area.'
+                },
+                {
+                    tutorRole: 'Conference attendee continuing a professional conversation.',
+                    learnerRole: 'Professional introducing yourself at an event.',
+                    scene: 'A conference coffee break between sessions.',
+                    learnerGoal: 'Introduce yourself, explain your work, and find a reason to stay in touch.'
+                },
+                {
+                    tutorRole: 'Volunteer coordinator explaining duties.',
+                    learnerRole: 'New volunteer signing up for a community event.',
+                    scene: 'A community center table during event setup.',
+                    learnerGoal: 'Choose a task, understand the schedule, and confirm what to bring.'
+                },
+                {
+                    tutorRole: 'Grocery cashier helping at checkout.',
+                    learnerRole: 'Shopper buying groceries on a budget.',
+                    scene: 'A grocery checkout lane with weekly sale signs nearby.',
+                    learnerGoal: 'Ask about prices, discounts, and payment options before finishing checkout.'
+                },
+                {
+                    tutorRole: 'Dentist receptionist managing the calendar.',
+                    learnerRole: 'Patient trying to schedule a dentist appointment.',
+                    scene: 'A phone call to a dentist office during a busy morning.',
+                    learnerGoal: 'Find an appointment time, confirm insurance details, and understand what to bring.'
+                },
+                {
+                    tutorRole: 'Taxi driver confirming the route.',
+                    learnerRole: 'Passenger going to an important appointment.',
+                    scene: 'A taxi stand outside a train station.',
+                    learnerGoal: 'Give the destination, ask about the fare, and arrive as close to on time as possible.'
+                },
+                {
+                    tutorRole: 'Bus station employee giving travel information.',
+                    learnerRole: 'Traveler planning a bus trip across town.',
+                    scene: 'A bus station information desk during the afternoon rush.',
+                    learnerGoal: 'Find the right route, buy the correct ticket, and understand any delays.'
+                },
+                {
+                    tutorRole: 'Car rental agent reviewing rental choices.',
+                    learnerRole: 'Traveler renting a car for two days.',
+                    scene: 'A rental car counter at a small airport.',
+                    learnerGoal: 'Choose a car, compare insurance options, and confirm the total cost.'
+                },
+                {
+                    tutorRole: 'Bike repair mechanic diagnosing the issue.',
+                    learnerRole: 'Cyclist with a bicycle problem.',
+                    scene: 'A neighborhood bike shop before closing.',
+                    learnerGoal: 'Describe the problem, ask about repair cost, and learn when the bike will be ready.'
+                },
+                {
+                    tutorRole: 'Neighbor responding to a noise concern.',
+                    learnerRole: 'Resident trying to solve a noise problem politely.',
+                    scene: 'A hallway conversation outside your apartment door.',
+                    learnerGoal: 'Explain the issue, stay friendly, and agree on a reasonable quiet plan.'
+                },
+                {
+                    tutorRole: 'Roommate discussing a fair plan.',
+                    learnerRole: 'Roommate trying to divide chores and shared costs.',
+                    scene: 'A kitchen table conversation after work.',
+                    learnerGoal: 'Agree on chores, expenses, and a simple way to avoid future confusion.'
+                },
+                {
+                    tutorRole: 'Hardware store employee recommending tools and materials.',
+                    learnerRole: 'Customer doing a small home repair.',
+                    scene: 'A hardware store aisle with several similar products.',
+                    learnerGoal: 'Explain the repair, choose the right supplies, and stay within budget.'
+                },
+                {
+                    tutorRole: 'Phone store employee explaining plans.',
+                    learnerRole: 'Customer comparing phone plans and upgrades.',
+                    scene: 'A mobile phone store display area.',
+                    learnerGoal: 'Compare plans, ask about upgrade costs, and choose the best option for your needs.'
+                },
+                {
+                    tutorRole: 'Financial advisor helping make a simple plan.',
+                    learnerRole: 'Client saving for a short-term goal.',
+                    scene: 'A quiet office with a basic budget worksheet.',
+                    learnerGoal: 'Explain your goal, review monthly savings, and leave with a realistic plan.'
+                },
+                {
+                    tutorRole: 'Classmate coordinating a study session.',
+                    learnerRole: 'Student preparing for an exam.',
+                    scene: 'A campus cafe between classes.',
+                    learnerGoal: 'Choose a study time, divide topics, and agree on what to review first.'
+                },
+                {
+                    tutorRole: 'Library worker guiding a search.',
+                    learnerRole: 'Visitor looking for a book or resource.',
+                    scene: 'A library help desk near the catalog computers.',
+                    learnerGoal: 'Describe what you need, find the right resource, and learn how to borrow or access it.'
+                },
+                {
+                    tutorRole: 'Personal trainer suggesting a realistic approach.',
+                    learnerRole: 'Client discussing fitness goals and limits.',
+                    scene: 'A gym consultation area after a short tour.',
+                    learnerGoal: 'Explain your goal, mention limitations, and choose a safe first workout plan.'
+                },
+                {
+                    tutorRole: 'Shoe store associate helping find the right fit.',
+                    learnerRole: 'Shopper looking for comfortable shoes.',
+                    scene: 'A shoe store bench with several boxes open.',
+                    learnerGoal: 'Find the right size, ask about comfort and returns, and decide whether to buy.'
+                },
+                {
+                    tutorRole: 'Bookstore employee recommending titles.',
+                    learnerRole: 'Reader asking for a book recommendation.',
+                    scene: 'A bookstore aisle near the new releases table.',
+                    learnerGoal: 'Describe your taste, compare two recommendations, and choose one book.'
+                },
+                {
+                    tutorRole: 'Tour guide sharing local history and travel tips.',
+                    learnerRole: 'Visitor exploring a new city.',
+                    scene: 'A walking tour stop near an old plaza.',
+                    learnerGoal: 'Ask about local history, get one practical travel tip, and decide where to go next.'
+                },
+                {
+                    tutorRole: 'Party host introducing guests.',
+                    learnerRole: 'Guest making small talk with someone new.',
+                    scene: 'A living room party where you know almost nobody.',
+                    learnerGoal: 'Introduce yourself, keep a friendly conversation going, and find a shared interest.'
+                },
+                {
+                    tutorRole: 'Wedding guest chatting at the reception.',
+                    learnerRole: 'Guest starting a polite conversation.',
+                    scene: 'A wedding reception table between dinner and dancing.',
+                    learnerGoal: 'Make pleasant small talk, ask about the event, and avoid an awkward silence.'
+                },
+                {
+                    tutorRole: 'Friend explaining why they are late.',
+                    learnerRole: 'Friend adjusting plans in real time.',
+                    scene: 'A phone call while you are waiting outside a restaurant.',
+                    learnerGoal: 'Understand the delay, adjust the plan, and decide whether to wait or change locations.'
+                },
+                {
+                    tutorRole: 'Family member asking about recent news.',
+                    learnerRole: 'Relative catching up on a video call.',
+                    scene: 'A relaxed video call from home.',
+                    learnerGoal: 'Share recent news, ask about family updates, and plan the next call.'
+                },
+                {
+                    tutorRole: 'Neighbor sharing the elevator.',
+                    learnerRole: 'Resident making brief friendly small talk.',
+                    scene: 'An apartment elevator stopping on several floors.',
+                    learnerGoal: 'Have a short polite conversation and end it naturally.'
+                },
+                {
+                    tutorRole: 'Pet sitter confirming the care routine.',
+                    learnerRole: 'Pet owner leaving town for the weekend.',
+                    scene: 'Your home while reviewing pet supplies.',
+                    learnerGoal: 'Explain feeding, walking, medication, and emergency instructions clearly.'
+                },
+                {
+                    tutorRole: 'Veterinary receptionist booking the appointment.',
+                    learnerRole: 'Pet owner describing a concern.',
+                    scene: 'A phone call to a veterinary clinic.',
+                    learnerGoal: 'Describe the pet issue, choose an appointment time, and ask what signs are urgent.'
+                },
+                {
+                    tutorRole: 'Delivery driver confirming package instructions.',
+                    learnerRole: 'Resident arranging a package drop-off.',
+                    scene: 'A delivery call while you are away from home.',
+                    learnerGoal: 'Give clear drop-off instructions and confirm the package will be secure.'
+                },
+                {
+                    tutorRole: 'Parking attendant explaining the policy.',
+                    learnerRole: 'Driver asking about parking rates or a lost ticket.',
+                    scene: 'A parking garage exit booth during a busy evening.',
+                    learnerGoal: 'Understand the fee, handle the ticket issue, and leave the garage.'
+                },
+                {
+                    tutorRole: 'Event volunteer explaining available tasks.',
+                    learnerRole: 'Visitor asking how to help at a community event.',
+                    scene: 'A park pavilion before a neighborhood cleanup.',
+                    learnerGoal: 'Choose a helpful task, understand safety instructions, and know where to start.'
+                },
+                {
+                    tutorRole: 'Community center employee reviewing the schedule.',
+                    learnerRole: 'Resident signing up for a class.',
+                    scene: 'A community center front desk with class flyers.',
+                    learnerGoal: 'Find a suitable class, ask about cost and schedule, and complete signup.'
+                },
+                {
+                    tutorRole: 'Electrician asking safety questions.',
+                    learnerRole: 'Resident reporting an electrical issue.',
+                    scene: 'A phone call from a room where the lights keep flickering.',
+                    learnerGoal: 'Describe the issue safely, answer questions, and schedule a repair.'
+                },
+                {
+                    tutorRole: 'Plumber gathering repair details.',
+                    learnerRole: 'Resident with a leak at home.',
+                    scene: 'A phone call from a bathroom with a towel on the floor.',
+                    learnerGoal: 'Describe the leak, ask what to do immediately, and arrange a repair time.'
+                },
+                {
+                    tutorRole: 'Driving instructor explaining lesson options.',
+                    learnerRole: 'Student preparing for a road test.',
+                    scene: 'A driving school office with lesson schedules posted.',
+                    learnerGoal: 'Ask about lessons, practice weak skills, and schedule road test preparation.'
+                },
+                {
+                    tutorRole: 'Picnic host planning with the group.',
+                    learnerRole: 'Friend coordinating a picnic.',
+                    scene: 'A group chat before a weekend picnic.',
+                    learnerGoal: 'Coordinate food, timing, transportation, and backup plans.'
+                },
+                {
+                    tutorRole: 'Chef friend explaining a family recipe.',
+                    learnerRole: 'Home cook learning a simple recipe.',
+                    scene: 'A kitchen video call while ingredients are on the counter.',
+                    learnerGoal: 'Understand the steps, ask about substitutions, and cook the dish successfully.'
+                },
+                {
+                    tutorRole: 'Nutritionist suggesting practical meals.',
+                    learnerRole: 'Busy person planning easy meals.',
+                    scene: 'A short nutrition consultation after work.',
+                    learnerGoal: 'Plan simple meals for the week that fit your schedule and preferences.'
+                },
+                {
+                    tutorRole: 'Coffee shop regular chatting in line.',
+                    learnerRole: 'Customer starting a friendly conversation.',
+                    scene: 'A slow coffee shop line on a Saturday morning.',
+                    learnerGoal: 'Make light conversation, ask for a recommendation, and end politely when ordering.'
+                },
+                {
+                    tutorRole: 'Music store employee explaining instruments and lessons.',
+                    learnerRole: 'Customer curious about learning music.',
+                    scene: 'A music store with instruments hanging on the wall.',
+                    learnerGoal: 'Ask about beginner instruments, lesson options, and what to practice first.'
+                },
+                {
+                    tutorRole: 'Podcast fan asking follow-up questions.',
+                    learnerRole: 'Listener recommending a favorite podcast.',
+                    scene: 'A casual conversation during a lunch break.',
+                    learnerGoal: 'Explain what the podcast is about, why you like it, and who should listen.'
+                },
+                {
+                    tutorRole: 'Sports fan discussing a recent game.',
+                    learnerRole: 'Fan talking about a team or match.',
+                    scene: 'A sports bar after a close game.',
+                    learnerGoal: 'Share your opinion, ask about the other fan\'s view, and keep the discussion friendly.'
+                },
+                {
+                    tutorRole: 'Tutor helping define a study goal.',
+                    learnerRole: 'Student trying to improve Spanish practice.',
+                    scene: 'An online tutoring session at the start of the week.',
+                    learnerGoal: 'Set a clear study goal, choose practice habits, and decide how to measure progress.'
+                },
+                {
+                    tutorRole: 'Counselor listening and asking gentle questions.',
+                    learnerRole: 'Person talking through stress.',
+                    scene: 'A calm office during a short support conversation.',
+                    learnerGoal: 'Describe what feels stressful and choose one realistic relaxation strategy.'
+                },
+                {
+                    tutorRole: 'Sleep coach suggesting routine changes.',
+                    learnerRole: 'Person trying to improve sleep habits.',
+                    scene: 'A wellness consultation about evening routines.',
+                    learnerGoal: 'Describe your habits, identify one problem, and choose a better bedtime routine.'
+                },
+                {
+                    tutorRole: 'Furniture store associate suggesting pieces.',
+                    learnerRole: 'Shopper furnishing a small room.',
+                    scene: 'A furniture showroom with compact displays.',
+                    learnerGoal: 'Find furniture that fits the room, budget, and style.'
+                },
+                {
+                    tutorRole: 'Interior designer friend asking about preferences.',
+                    learnerRole: 'Person describing a comfortable home.',
+                    scene: 'A casual visit while looking around your living room.',
+                    learnerGoal: 'Explain your taste, describe what feels comfortable, and choose one improvement.'
+                },
+                {
+                    tutorRole: 'Security guard giving directions.',
+                    learnerRole: 'Visitor lost inside a large building.',
+                    scene: 'A lobby security desk in a confusing office complex.',
+                    learnerGoal: 'Ask for directions, confirm landmarks, and arrive at the right room.'
+                },
+                {
+                    tutorRole: 'Project partner coordinating responsibilities.',
+                    learnerRole: 'Partner planning tasks around a busy calendar.',
+                    scene: 'A shared workspace before a project deadline.',
+                    learnerGoal: 'Divide tasks, handle schedule conflicts, and agree on the next checkpoint.'
+                },
+                {
+                    tutorRole: 'Another parent chatting at a school event.',
+                    learnerRole: 'Parent making casual conversation.',
+                    scene: 'A school hallway before a student performance.',
+                    learnerGoal: 'Introduce yourself, ask about the event, and make a friendly connection.'
+                },
+                {
+                    tutorRole: 'Doctor office receptionist rescheduling visits.',
+                    learnerRole: 'Patient who missed an appointment.',
+                    scene: 'A phone call to a medical office.',
+                    learnerGoal: 'Apologize, reschedule the appointment, and understand any fee or policy.'
+                },
+                {
+                    tutorRole: 'Restaurant manager responding professionally.',
+                    learnerRole: 'Customer making a polite complaint.',
+                    scene: 'A restaurant table after receiving the wrong order.',
+                    learnerGoal: 'Explain the problem, ask for a fair solution, and stay polite.'
+                },
+                {
+                    tutorRole: 'Store manager explaining return policy options.',
+                    learnerRole: 'Customer asking for an exception.',
+                    scene: 'A store service desk with a receipt in your hand.',
+                    learnerGoal: 'Explain the situation, ask for an exception, and accept the best available option.'
+                },
+                {
+                    tutorRole: 'Friend discussing food preferences and constraints.',
+                    learnerRole: 'Friend choosing a restaurant for dinner.',
+                    scene: 'A phone conversation while looking at restaurant menus.',
+                    learnerGoal: 'Choose a restaurant that works for both people and confirm the plan.'
+                },
+                {
+                    tutorRole: 'Weather-conscious friend helping make a new plan.',
+                    learnerRole: 'Friend changing outdoor plans because of rain.',
+                    scene: 'A weekend planning chat as the forecast gets worse.',
+                    learnerGoal: 'Suggest alternatives, agree on timing, and keep the outing enjoyable.'
+                },
+                {
+                    tutorRole: 'Person asking how to get somewhere nearby.',
+                    learnerRole: 'Resident giving directions in your neighborhood.',
+                    scene: 'A street corner near your home.',
+                    learnerGoal: 'Give clear directions, mention landmarks, and check that the person understood.'
+                },
+                {
+                    tutorRole: 'Lost tourist trying to understand public transit.',
+                    learnerRole: 'Local person explaining transit.',
+                    scene: 'A bus stop near a train station.',
+                    learnerGoal: 'Explain the route, ticket, transfer, and where the tourist should get off.'
+                },
+                {
+                    tutorRole: 'Colleague asking about the day.',
+                    learnerRole: 'Employee describing a workday during lunch.',
+                    scene: 'A break room table during lunch.',
+                    learnerGoal: 'Talk about your morning, mention one challenge, and ask about your colleague\'s day.'
+                },
+                {
+                    tutorRole: 'Old friend asking about a memory.',
+                    learnerRole: 'Friend sharing a childhood tradition.',
+                    scene: 'A relaxed conversation while looking at old photos.',
+                    learnerGoal: 'Describe the memory, explain why it mattered, and ask about your friend\'s memories.'
+                },
+                {
+                    tutorRole: 'Photographer friend asking about a photo.',
+                    learnerRole: 'Person describing a favorite photo.',
+                    scene: 'A cafe table with photos open on your phone.',
+                    learnerGoal: 'Describe the image, tell the story behind it, and explain why you like it.'
+                },
+                {
+                    tutorRole: 'City planner asking for resident feedback.',
+                    learnerRole: 'Resident describing livability in a city.',
+                    scene: 'A public feedback table at a neighborhood meeting.',
+                    learnerGoal: 'Explain what makes the city easy or hard to live in and suggest one improvement.'
+                },
+                {
+                    tutorRole: 'Journalist asking about media habits.',
+                    learnerRole: 'Person discussing how you stay informed.',
+                    scene: 'A short interview for a community article.',
+                    learnerGoal: 'Explain where you get news, how you avoid overwhelm, and what you trust.'
+                },
+                {
+                    tutorRole: 'Environmental volunteer discussing practical habits.',
+                    learnerRole: 'Resident talking about sustainable daily choices.',
+                    scene: 'A community fair booth about local sustainability.',
+                    learnerGoal: 'Describe current habits, choose one new change, and ask how to make it easier.'
+                },
+                {
+                    tutorRole: 'Friend helping plan a relaxing evening.',
+                    learnerRole: 'Person trying to recharge after a hard day.',
+                    scene: 'A quiet phone call after work.',
+                    learnerGoal: 'Explain what you need, choose a simple evening plan, and set one boundary for rest.'
+                },
+                {
+                    tutorRole: 'Manager asking practical follow-up questions.',
+                    learnerRole: 'Employee explaining a mistake at work.',
+                    scene: 'A private conversation in a small meeting room.',
+                    learnerGoal: 'Explain what happened, take responsibility, and propose a realistic fix.'
+                }
             ];
             this.currentScenario = this.pickRandomScenario();
             
             this.messagesContainer = document.getElementById('messages');
             this.userInput = document.getElementById('user-input');
             this.sendBtn = document.getElementById('send-btn');
-            this.scenarioText = document.getElementById('scenario-text');
+            this.scenarioDetails = document.getElementById('scenario-details');
             this.disableScenarioBtn = document.getElementById('disable-scenario-btn');
             this.settingsBtn = document.getElementById('settings-btn');
             this.settingsModal = document.getElementById('settings-modal');
@@ -757,8 +1282,18 @@ Remember: You're here to help them practice through conversation only, so always
 Role-play scenario for this chat:
 Tutor role: ${this.currentScenario.tutorRole}
 Learner role: ${this.currentScenario.learnerRole}
+Scene: ${this.currentScenario.scene}
+Learner goal: ${this.currentScenario.learnerGoal}
 
-Begin in the tutor role unless the learner starts with a different direction. Keep the role play natural, interactive, and entirely in Spanish. The learner sees only the learner role, so do not describe or explain the scenario out of character unless the learner asks.`;
+Begin in the tutor role unless the learner starts with a different direction. Keep the role play natural, interactive, and entirely in Spanish.
+
+The learner can see the full scenario at the top of the page. Do not restate the scenario out of character unless the learner asks.
+
+The learner is trying to accomplish the learner goal. Help them succeed if they communicate clearly and make reasonable choices.
+
+During the conversation, introduce about three small, realistic obstacles in character. Space them out and introduce only one obstacle at a time. Obstacles can include missing information, a policy, limited availability, a misunderstanding, a time constraint, an extra requirement, or a simple complication from the scene. Do not make the goal impossible, do not trap the learner, and do not reveal obstacle numbers or game mechanics.
+
+If the learner gets stuck, offer a natural hint in Spanish while staying in the tutor role.`;
         }
 
         syncSystemPrompt() {
@@ -770,16 +1305,43 @@ Begin in the tutor role unless the learner starts with a different direction. Ke
         }
 
         renderScenario() {
+            this.scenarioDetails.textContent = '';
+
             if (!this.scenarioEnabled) {
-                this.scenarioText.textContent = 'Scenario disabled for this conversation.';
+                this.scenarioDetails.appendChild(this.createScenarioField('Status', 'Scenario disabled for this conversation.'));
                 this.disableScenarioBtn.hidden = true;
                 return;
             }
 
-            this.scenarioText.textContent = this.currentScenario.learnerRole;
+            [
+                ['Tutor', this.currentScenario.tutorRole],
+                ['Learner', this.currentScenario.learnerRole],
+                ['Scene', this.currentScenario.scene],
+                ['Goal', this.currentScenario.learnerGoal]
+            ].forEach(([label, value]) => {
+                this.scenarioDetails.appendChild(this.createScenarioField(label, value));
+            });
+
             this.disableScenarioBtn.hidden = false;
             this.disableScenarioBtn.disabled = this.hasSentFirstMessage;
             this.disableScenarioBtn.textContent = this.hasSentFirstMessage ? 'Scenario fixed' : 'Disable scenario';
+        }
+
+        createScenarioField(label, value) {
+            const field = document.createElement('div');
+            field.className = 'scenario-field';
+
+            const fieldLabel = document.createElement('span');
+            fieldLabel.className = 'scenario-field-label';
+            fieldLabel.textContent = label;
+
+            const fieldValue = document.createElement('span');
+            fieldValue.className = 'scenario-field-value';
+            fieldValue.textContent = value;
+
+            field.appendChild(fieldLabel);
+            field.appendChild(fieldValue);
+            return field;
         }
 
         disableScenario() {
