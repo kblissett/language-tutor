@@ -71,6 +71,59 @@
       font-weight: 600;
     }
 
+    .scenario-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+      flex-shrink: 0;
+    }
+
+    .scenario-content {
+      min-width: 0;
+    }
+
+    .scenario-label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .scenario-text {
+      display: block;
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+      line-height: 1.35;
+    }
+
+    .secondary-btn {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      font: inherit;
+      font-size: 0.875rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    .secondary-btn:hover:not(:disabled) {
+      background: var(--bg-primary);
+    }
+
+    .secondary-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
     .icon-btn {
       background: transparent;
       border: none;
@@ -419,6 +472,17 @@
         font-size: 1.25rem;
       }
 
+      .scenario-bar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+      }
+
+      .secondary-btn {
+        width: 100%;
+      }
+
       .messages {
         padding: 1rem;
       }
@@ -467,6 +531,14 @@
         </svg>
       </button>
     </header>
+
+    <div id="scenario-bar" class="scenario-bar">
+      <div class="scenario-content">
+        <span class="scenario-label">Your role</span>
+        <span id="scenario-text" class="scenario-text"></span>
+      </div>
+      <button id="disable-scenario-btn" class="secondary-btn" type="button">Disable scenario</button>
+    </div>
 
     <div id="messages" class="messages"></div>
 
@@ -518,29 +590,138 @@
             this.apiKey = null;
             this.messages = [];
             this.isStreaming = false;
+            this.hasSentFirstMessage = false;
+            this.scenarioEnabled = true;
+            this.rolePlayScenarios = [
+                { learnerRole: 'You order breakfast at a busy cafe and ask about substitutions.', tutorRole: 'You are the cafe barista taking the order.' },
+                { learnerRole: 'You ask about grocery prices, discounts, and payment options.', tutorRole: 'You are the grocery cashier helping at checkout.' },
+                { learnerRole: 'You explain mild symptoms and ask for over-the-counter advice.', tutorRole: 'You are the pharmacist asking careful follow-up questions.' },
+                { learnerRole: 'You describe symptoms during a routine doctor appointment.', tutorRole: 'You are the doctor leading the appointment.' },
+                { learnerRole: 'You schedule, change, or confirm a dentist appointment.', tutorRole: 'You are the dentist receptionist managing the calendar.' },
+                { learnerRole: 'You ask about restaurant ingredients, allergies, and recommendations.', tutorRole: 'You are the restaurant server explaining the menu.' },
+                { learnerRole: 'You check into a hotel and ask about local transportation.', tutorRole: 'You are the hotel receptionist welcoming the guest.' },
+                { learnerRole: 'You give directions to a destination and ask about the fare.', tutorRole: 'You are the taxi driver confirming the route.' },
+                { learnerRole: 'You ask about bus routes, delays, and tickets.', tutorRole: 'You are the bus station employee giving travel information.' },
+                { learnerRole: 'You boarded the wrong train and need help fixing the trip.', tutorRole: 'You are the train conductor helping the passenger.' },
+                { learnerRole: 'You ask about a delayed or missed flight.', tutorRole: 'You are the airport gate agent explaining the options.' },
+                { learnerRole: 'You compare rental car options and insurance.', tutorRole: 'You are the car rental agent reviewing the choices.' },
+                { learnerRole: 'You explain a problem with your bicycle.', tutorRole: 'You are the bike repair mechanic diagnosing the issue.' },
+                { learnerRole: 'You report a broken appliance in your apartment.', tutorRole: 'You are the landlord asking what needs repair.' },
+                { learnerRole: 'You tour an apartment and ask about fees.', tutorRole: 'You are the apartment leasing agent answering questions.' },
+                { learnerRole: 'You politely discuss a noise problem with a neighbor.', tutorRole: 'You are the neighbor responding to the concern.' },
+                { learnerRole: 'You negotiate chores and shared expenses with a roommate.', tutorRole: 'You are the roommate discussing a fair plan.' },
+                { learnerRole: 'You explain a repair project and ask what supplies to buy.', tutorRole: 'You are the hardware store employee recommending tools and materials.' },
+                { learnerRole: 'You compare phone plans and upgrade options.', tutorRole: 'You are the phone store employee explaining the plans.' },
+                { learnerRole: 'You call customer support about an incorrect bill.', tutorRole: 'You are the customer support representative investigating the bill.' },
+                { learnerRole: 'You return an online purchase that does not fit.', tutorRole: 'You are the online store representative processing the return.' },
+                { learnerRole: 'You open a bank account and ask about fees.', tutorRole: 'You are the bank teller explaining account options.' },
+                { learnerRole: 'You discuss saving for a short-term goal.', tutorRole: 'You are the financial advisor helping make a simple plan.' },
+                { learnerRole: 'You answer common job interview questions.', tutorRole: 'You are the job interviewer learning about the candidate.' },
+                { learnerRole: 'You negotiate schedule, salary, or start date for a new job.', tutorRole: 'You are the hiring manager discussing the offer.' },
+                { learnerRole: 'You ask a coworker for help on a deadline.', tutorRole: 'You are the coworker figuring out how to help.' },
+                { learnerRole: 'You explain a mistake at work and propose a fix.', tutorRole: 'You are the manager asking practical follow-up questions.' },
+                { learnerRole: 'You plan a study session before an exam.', tutorRole: 'You are the classmate coordinating the session.' },
+                { learnerRole: 'You ask for clarification after class.', tutorRole: 'You are the teacher explaining the confusing point.' },
+                { learnerRole: 'You ask for help finding a book or resource.', tutorRole: 'You are the library worker guiding the search.' },
+                { learnerRole: 'You ask about gym classes, memberships, and equipment.', tutorRole: 'You are the gym employee explaining options.' },
+                { learnerRole: 'You discuss fitness goals and limitations.', tutorRole: 'You are the personal trainer suggesting a realistic approach.' },
+                { learnerRole: 'You describe the haircut or style you want.', tutorRole: 'You are the hair stylist asking about preferences.' },
+                { learnerRole: 'You shop for an outfit for a specific event.', tutorRole: 'You are the clothing store associate offering options.' },
+                { learnerRole: 'You ask about shoe sizing, comfort, and returns.', tutorRole: 'You are the shoe store associate helping find the right fit.' },
+                { learnerRole: 'You ask for a book recommendation.', tutorRole: 'You are the bookstore employee recommending titles.' },
+                { learnerRole: 'You ask questions about a museum exhibit.', tutorRole: 'You are the museum guide explaining the exhibit.' },
+                { learnerRole: 'You ask about local history and practical travel tips.', tutorRole: 'You are the tour guide leading the conversation.' },
+                { learnerRole: 'You make small talk with someone new at a party.', tutorRole: 'You are the party host introducing yourself.' },
+                { learnerRole: 'You start a polite conversation at a wedding reception.', tutorRole: 'You are another wedding guest chatting at the reception.' },
+                { learnerRole: 'You invite a friend to dinner and work out the details.', tutorRole: 'You are the friend responding to the invitation.' },
+                { learnerRole: 'You adjust plans with a friend who is running late.', tutorRole: 'You are the late friend explaining the delay.' },
+                { learnerRole: 'You catch up with a family member on a video call.', tutorRole: 'You are the family member asking about recent news.' },
+                { learnerRole: 'You make brief friendly small talk with a neighbor in an elevator.', tutorRole: 'You are the neighbor sharing the elevator.' },
+                { learnerRole: 'You explain routines, rules, and emergency contacts to a babysitter.', tutorRole: 'You are the babysitter asking what you need to know.' },
+                { learnerRole: 'You explain how to care for your pet while you are away.', tutorRole: 'You are the pet sitter confirming the care routine.' },
+                { learnerRole: 'You describe a pet issue and schedule a veterinary visit.', tutorRole: 'You are the veterinary receptionist booking the appointment.' },
+                { learnerRole: 'You give instructions for a package drop-off.', tutorRole: 'You are the delivery driver confirming where to leave the package.' },
+                { learnerRole: 'You mail a package and ask about tracking.', tutorRole: 'You are the post office clerk explaining shipping choices.' },
+                { learnerRole: 'You ask about parking rates or a lost ticket.', tutorRole: 'You are the parking attendant explaining the policy.' },
+                { learnerRole: 'You report a lost wallet.', tutorRole: 'You are the police officer taking the report.' },
+                { learnerRole: 'You ask how to help at a community event.', tutorRole: 'You are the event volunteer explaining tasks.' },
+                { learnerRole: 'You sign up for a class at a community center.', tutorRole: 'You are the community center employee reviewing the schedule.' },
+                { learnerRole: 'You describe a computer problem.', tutorRole: 'You are the repair technician diagnosing the issue.' },
+                { learnerRole: 'You report slow internet service.', tutorRole: 'You are the internet provider agent troubleshooting the problem.' },
+                { learnerRole: 'You explain an issue with outlets or lights.', tutorRole: 'You are the electrician asking safety questions.' },
+                { learnerRole: 'You describe a leak and schedule a repair.', tutorRole: 'You are the plumber gathering details.' },
+                { learnerRole: 'You explain a car problem and ask about cost.', tutorRole: 'You are the mechanic explaining possible causes.' },
+                { learnerRole: 'You ask about driving lessons and road test practice.', tutorRole: 'You are the driving instructor explaining lesson options.' },
+                { learnerRole: 'You plan a short trip within a budget.', tutorRole: 'You are the travel agent suggesting options.' },
+                { learnerRole: 'You ask about shared rooms and hostel rules.', tutorRole: 'You are the hostel employee explaining the stay.' },
+                { learnerRole: 'You ask what to do on a rainy day while traveling.', tutorRole: 'You are the tourist information clerk suggesting activities.' },
+                { learnerRole: 'You ask about trail safety and weather.', tutorRole: 'You are the park ranger giving practical advice.' },
+                { learnerRole: 'You coordinate food, timing, and transportation for a picnic.', tutorRole: 'You are the picnic host planning with the group.' },
+                { learnerRole: 'You ask for a restaurant table for a group with different needs.', tutorRole: 'You are the restaurant host checking availability.' },
+                { learnerRole: 'You ask how to cook a simple family recipe.', tutorRole: 'You are the chef friend explaining the recipe.' },
+                { learnerRole: 'You plan easy meals for a busy week.', tutorRole: 'You are the nutritionist suggesting practical meals.' },
+                { learnerRole: 'You ask about produce and cooking ideas at a farmers market.', tutorRole: 'You are the farmers market vendor describing what is fresh.' },
+                { learnerRole: 'You start a friendly conversation while waiting in a coffee shop line.', tutorRole: 'You are a coffee shop regular chatting in line.' },
+                { learnerRole: 'You buy movie tickets and ask about showtimes.', tutorRole: 'You are the movie theater employee selling tickets.' },
+                { learnerRole: 'You ask about instruments or music lessons.', tutorRole: 'You are the music store employee explaining options.' },
+                { learnerRole: 'You recommend a favorite podcast and explain why you like it.', tutorRole: 'You are a podcast fan asking follow-up questions.' },
+                { learnerRole: 'You talk about a recent game or favorite sports team.', tutorRole: 'You are a sports fan discussing the game.' },
+                { learnerRole: 'You explain how you like to practice languages.', tutorRole: 'You are a language exchange partner planning practice.' },
+                { learnerRole: 'You ask for help setting a study goal.', tutorRole: 'You are the tutor helping define the goal.' },
+                { learnerRole: 'You talk through stress and relaxation strategies.', tutorRole: 'You are the counselor listening and asking gentle questions.' },
+                { learnerRole: 'You describe evening habits and ask for better sleep ideas.', tutorRole: 'You are the sleep coach suggesting routine changes.' },
+                { learnerRole: 'You ask for advice before making a big purchase.', tutorRole: 'You are the friend helping compare options.' },
+                { learnerRole: 'You compare neighborhoods and commute options.', tutorRole: 'You are the real estate agent answering practical questions.' },
+                { learnerRole: 'You shop for furniture for a small room.', tutorRole: 'You are the furniture store associate suggesting pieces.' },
+                { learnerRole: 'You describe what makes a home feel comfortable.', tutorRole: 'You are an interior designer friend asking about preferences.' },
+                { learnerRole: 'You ask for directions inside a large building.', tutorRole: 'You are the security guard giving directions.' },
+                { learnerRole: 'You introduce yourself professionally at a conference.', tutorRole: 'You are another conference attendee continuing the conversation.' },
+                { learnerRole: 'You plan project tasks around a busy calendar.', tutorRole: 'You are the project partner coordinating responsibilities.' },
+                { learnerRole: 'You make casual conversation at a school event.', tutorRole: 'You are another parent at the event.' },
+                { learnerRole: 'You ask about volunteer duties and schedules.', tutorRole: 'You are the volunteer coordinator explaining the role.' },
+                { learnerRole: 'You explain that you missed a doctor appointment.', tutorRole: 'You are the doctor office receptionist rescheduling the visit.' },
+                { learnerRole: 'You make a polite complaint about a restaurant order.', tutorRole: 'You are the restaurant manager responding professionally.' },
+                { learnerRole: 'You ask for an exception to a return policy.', tutorRole: 'You are the store manager explaining what is possible.' },
+                { learnerRole: 'You choose a restaurant with a friend who has different food preferences.', tutorRole: 'You are the friend discussing preferences and constraints.' },
+                { learnerRole: 'You change outdoor plans because of rain.', tutorRole: 'You are the weather-conscious friend helping make a new plan.' },
+                { learnerRole: 'You give directions in your neighborhood.', tutorRole: 'You are the person asking how to get somewhere nearby.' },
+                { learnerRole: 'You explain how to use local public transit.', tutorRole: 'You are the lost tourist trying to understand the route.' },
+                { learnerRole: 'You describe your workday during lunch with a colleague.', tutorRole: 'You are the colleague asking about the day.' },
+                { learnerRole: 'You share a childhood tradition or memory with an old friend.', tutorRole: 'You are the old friend asking about the memory.' },
+                { learnerRole: 'You describe a favorite photo and the story behind it.', tutorRole: 'You are the photographer friend asking about the photo.' },
+                { learnerRole: 'You explain what makes a city easy to live in.', tutorRole: 'You are the city planner asking for resident feedback.' },
+                { learnerRole: 'You discuss how you stay informed without feeling overwhelmed.', tutorRole: 'You are the journalist asking about media habits.' },
+                { learnerRole: 'You talk about sustainable daily habits.', tutorRole: 'You are the environmental volunteer discussing practical changes.' },
+                { learnerRole: 'You plan a quiet evening to recharge after a hard day.', tutorRole: 'You are the friend helping make the evening relaxing.' }
+            ];
+            this.currentScenario = this.pickRandomScenario();
             
             this.messagesContainer = document.getElementById('messages');
             this.userInput = document.getElementById('user-input');
             this.sendBtn = document.getElementById('send-btn');
+            this.scenarioText = document.getElementById('scenario-text');
+            this.disableScenarioBtn = document.getElementById('disable-scenario-btn');
             this.settingsBtn = document.getElementById('settings-btn');
             this.settingsModal = document.getElementById('settings-modal');
             this.closeModalBtn = document.getElementById('close-modal');
             this.apiKeyInput = document.getElementById('api-key');
             this.saveSettingsBtn = document.getElementById('save-settings');
 
-            this.systemPrompt = `You are a friendly and patient Spanish conversation partner helping language learners practice their Spanish. Your role is to:
+            this.baseSystemPrompt = `You are a friendly and patient Spanish conversation partner helping language learners practice their Spanish. Your role is to:
 - Have natural, engaging conversations entirely in Spanish
 - Be warm, approachable, and encouraging
 - Keep the conversation flowing by asking follow-up questions
 - Adapt to the learner's level while gently introducing new vocabulary
-- Discuss a variety of interesting topics
+- Use role-play scenarios to make daily Spanish practice practical and engaging
 - Be enthusiastic and make learning feel like chatting with a friend
 - Do not correct the user's grammar, spelling, word choice, accents, phrasing, or style
 - Do not mention mistakes, explain corrections, rewrite the user's message, or provide coaching notes
 - Leave all corrections and style feedback to the separate correction model
 - Use web search when the user asks you to look something up, asks about current or recent information, or when an accurate answer depends on fresh external facts
+- Do not use any form of markup or Markdown in your responses. Do not use headings, bullet lists, numbered lists, tables, code fences, block quotes, bold or italic markers, Markdown links, XML, or HTML tags. Use plain text sentences only.
 
 Remember: You're here to help them practice through conversation only, so always respond in Spanish and keep the conversation going!`;
+            this.systemPrompt = this.getSystemPrompt();
 
             this.init();
         }
@@ -549,6 +730,7 @@ Remember: You're here to help them practice through conversation only, so always
             this.loadApiKey();
             this.setupEventListeners();
             this.autoResizeTextarea();
+            this.renderScenario();
 
             this.messages.push({
                 role: 'system',
@@ -558,6 +740,54 @@ Remember: You're here to help them practice through conversation only, so always
             if (!this.apiKey) {
                 this.showSettings();
             }
+        }
+
+        pickRandomScenario() {
+            const index = Math.floor(Math.random() * this.rolePlayScenarios.length);
+            return this.rolePlayScenarios[index];
+        }
+
+        getSystemPrompt() {
+            if (!this.scenarioEnabled) {
+                return this.baseSystemPrompt;
+            }
+
+            return `${this.baseSystemPrompt}
+
+Role-play scenario for this chat:
+Tutor role: ${this.currentScenario.tutorRole}
+Learner role: ${this.currentScenario.learnerRole}
+
+Begin in the tutor role unless the learner starts with a different direction. Keep the role play natural, interactive, and entirely in Spanish. The learner sees only the learner role, so do not describe or explain the scenario out of character unless the learner asks.`;
+        }
+
+        syncSystemPrompt() {
+            this.systemPrompt = this.getSystemPrompt();
+            const systemMessage = this.messages.find(message => message.role === 'system');
+            if (systemMessage) {
+                systemMessage.content = this.systemPrompt;
+            }
+        }
+
+        renderScenario() {
+            if (!this.scenarioEnabled) {
+                this.scenarioText.textContent = 'Scenario disabled for this conversation.';
+                this.disableScenarioBtn.hidden = true;
+                return;
+            }
+
+            this.scenarioText.textContent = this.currentScenario.learnerRole;
+            this.disableScenarioBtn.hidden = false;
+            this.disableScenarioBtn.disabled = this.hasSentFirstMessage;
+            this.disableScenarioBtn.textContent = this.hasSentFirstMessage ? 'Scenario fixed' : 'Disable scenario';
+        }
+
+        disableScenario() {
+            if (this.hasSentFirstMessage) return;
+
+            this.scenarioEnabled = false;
+            this.syncSystemPrompt();
+            this.renderScenario();
         }
 
         loadApiKey() {
@@ -582,6 +812,7 @@ Remember: You're here to help them practice through conversation only, so always
 
         setupEventListeners() {
             this.sendBtn.addEventListener('click', () => this.sendMessage());
+            this.disableScenarioBtn.addEventListener('click', () => this.disableScenario());
             this.userInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -690,6 +921,10 @@ Remember: You're here to help them practice through conversation only, so always
 
             this.userInput.value = '';
             this.autoResizeTextarea();
+
+            this.hasSentFirstMessage = true;
+            this.syncSystemPrompt();
+            this.renderScenario();
 
             this.isStreaming = true;
             this.sendBtn.disabled = true;
@@ -856,6 +1091,8 @@ Return corrections only for text that should be changed. If a phrase, sentence, 
 Do not focus on punctuation; mention punctuation only when it changes meaning or seriously affects readability.
 
 Use comments only for a brief overall note about needed corrections. Do not use comments to mention correct text.
+
+Inside all JSON string values, use plain text only. Do not include any form of markup or Markdown, including headings, bullet lists, numbered lists, tables, code fences, block quotes, bold or italic markers, Markdown links, XML, or HTML tags.
 
 If there are no needed changes, return corrections_needed false, an empty corrections array, and comments null. Respond ONLY with the JSON schema provided.`;
 
