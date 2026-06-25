@@ -5,7 +5,7 @@ A self-contained, single-file Spanish conversation partner and language coach.
 ## Features
 
 - **Natural Conversation**: Practice Spanish with an AI that adapts to your level.
-- **Real-time Corrections**: Get instant feedback on grammar, spelling, and phrasing.
+- **Pre-submit Corrections**: Drafts are checked before the tutor responds, with inline feedback when something needs a quick fix.
 - **Web Search**: Ask the chat tutor to look up current information when needed.
 - **Privacy First**: Your OpenAI API key is stored locally in your browser and never sent anywhere else.
 - **No Setup Required**: No build steps, no dependencies, just a single HTML file.
